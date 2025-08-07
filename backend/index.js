@@ -27,7 +27,7 @@ checkPremiumExpiry();
 
 // CORS -> Cross Origin Resource Sharing
 app.use(cors({
-    origin: "http://localhost:5173" ,
+    origin: "https://codeverse-3-jx5t.onrender.com",
     credentials: true
 }))
 
