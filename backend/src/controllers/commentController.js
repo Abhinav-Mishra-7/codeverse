@@ -1,5 +1,5 @@
 const Comment = require('../models/comment') ;
-const {io} = require("../index") ;
+const {io} = require("../../index") ;
 const SolutionVideo = require('../models/solutionVideo');
 
 // Get all top-level comments for a video, with sorting
