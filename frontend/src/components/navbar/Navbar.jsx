@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { NavLink, useNavigate } from "react-router-dom"; // Import useNavigate
+import { NavLink, useNavigate } from "react-router"; // Import useNavigate
 import { UserIcon, ChevronDown, Settings, LogOut, Menu } from "lucide-react"; // Import Menu icon
 import { useSelector, useDispatch } from "react-redux";
 import { logoutUser } from "../../authSlice";
