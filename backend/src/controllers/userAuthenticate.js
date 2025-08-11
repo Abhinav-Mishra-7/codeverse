@@ -89,7 +89,7 @@ const login = async(req,res)=>{
             throw new Error("Invalid Credentials") ;
 
         // creating jwt
-        const token = jwt.sign({_id: user._id , emailId: emailId , role: user.role} , process.env.JWT_KEY , {expiresIn: 3600*24}) ;  
+        const token = jwt.sign({_id: user._id , emailId: emailId , role: user.role} , process.env.JWT_KEY , {expiresIn: '24h'}) ;  
 
         const reply = {
             firstName: user.firstName ,
@@ -100,7 +100,7 @@ const login = async(req,res)=>{
         }
         
         // Storing cookie
-        res.cookie('token' , token , {maxAge: 24*60*60*1000} , {httpOnly: true,secure: true,sameSite: 'none'}) ;
+        res.cookie('token' , token , {maxAge: 24*60*60*1000 , httpOnly: true,secure: true,sameSite: 'none'}) ;
 
         res.status(201).json({
             user: reply ,
@@ -130,7 +130,7 @@ const logout = async(req,res)=>{
         
  
         // Clear cookie
-        res.cookie("token" , null ,{expires: new Date(Date.now())} ) ; 
+        res.cookie("token" , null ,{expires: new Date(0),httpOnly: true,secure: true,sameSite: 'none'}) ; 
 
         res.send("Logged Out Successfully") ; 
 
