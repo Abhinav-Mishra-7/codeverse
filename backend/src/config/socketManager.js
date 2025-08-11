@@ -5,7 +5,7 @@ const { Server } = require("socket.io");
 const initSocket = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:5173", // Your React frontend URL
+      origin: "https://codeverse-3-jx5t.onrender.com", // Your React frontend URL
       methods: ["GET", "POST"],
     },
   });
