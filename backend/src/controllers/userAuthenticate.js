@@ -224,7 +224,14 @@ const googleLogin = async (req, res) => {
             { expiresIn: 24 * 3600 }
         );
 
-        res.cookie("token", jwtToken);
+        const baseCookieOpts = {
+         httpOnly: true,
+         secure: true,         
+         sameSite: "None",      
+         maxAge: 24 * 60 * 60 * 1000
+       };
+
+        res.cookie("token", jwtToken , baseCookieOpts);
         
         const reply = {
             firstName: user.firstName,
