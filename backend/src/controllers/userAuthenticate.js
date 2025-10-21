@@ -7,19 +7,6 @@ const Submission = require("../models/submission") ;
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const Problem = require("../models/problem") ;
-
-
-const TOKEN_EXPIRES_IN = "24h"; 
-const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN || undefined; 
-
-const baseCookieOpts = {
-  httpOnly: true,
-  secure: true,          
-  sameSite: "None",    
-  maxAge: 24 * 60 * 60 * 1000
-};
-const COOKIE_OPTS = COOKIE_DOMAIN ? { ...baseCookieOpts, domain: COOKIE_DOMAIN } : baseCookieOpts;
-
  
 // register
 const register = async(req,res)=>{
@@ -226,7 +213,7 @@ const googleLogin = async (req, res) => {
                 emailId: email,
                 password: hashedPassword,
                 role: "user",
-                verified: true,  // Google-verified emails don't need OTP
+                verified: true, 
             });
         }
 
@@ -234,10 +221,10 @@ const googleLogin = async (req, res) => {
         const jwtToken = jwt.sign(
             { _id: user._id, emailId: user.emailId, role: user.role },
             process.env.JWT_KEY,
-            { expiresIn: TOKEN_EXPIRES_IN }
+            { expiresIn: 24 * 3600 }
         );
 
-        res.cookie("token", jwtToken, COOKIE_OPTS);
+        res.cookie("token", jwtToken);
         
         const reply = {
             firstName: user.firstName,
