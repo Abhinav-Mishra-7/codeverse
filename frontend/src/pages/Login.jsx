@@ -4,10 +4,11 @@ import { z } from 'zod';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, NavLink } from 'react-router';
 import { loginUser } from "../authSlice";
-import { useEffect, useState } from 'react';
-import { Lock, Mail, Eye, EyeOff, Flower2 } from 'lucide-react';
-import { toast } from 'react-toastify';
-import GoogleSignUp from '../components/google/GoogleSignUp';
+import { useEffect, useState, lazy, Suspense } from 'react';
+import { Lock, Mail, Eye, EyeOff } from 'lucide-react';
+
+// Lazy load GoogleSignUp since it's below the fold and contains Google OAuth SDK
+const GoogleSignUp = lazy(() => import('../components/google/GoogleSignUp'));
 
 const loginSchema = z.object({
   emailId: z.string().email("Invalid Email"),
@@ -34,7 +35,6 @@ function Login() {
     dispatch(loginUser(data));
   };
 
-
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-card border border-border rounded-lg shadow-2xl p-8 space-y-6">
@@ -56,17 +56,18 @@ function Login() {
             </label>
             <div className="relative">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <Mail className="h-5 w-5 text-muted-foreground" />
+                <Mail className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
               </div>
               <input 
                 id="emailId" 
                 type="email" 
                 placeholder="example12@gmail.com" 
+                autoComplete="email"
                 className={`block w-full rounded-md border-input bg-[var(--input-background)] py-2.5 pl-10 pr-3 text-foreground placeholder:text-sm placeholder:text-[var(--placeholder-text)] focus:border-primary-from focus:outline-none focus:ring-1 focus:ring-primary-from ${errors.emailId ? 'border-destructive focus:border-destructive focus:ring-destructive' : ''}`}
                 {...register('emailId')} 
               />
             </div>
-            {errors.emailId && (<p className="mt-1.5 text-sm text-destructive">{errors.emailId.message}</p>)}
+            {errors.emailId && (<p className="mt-1.5 text-sm text-destructive" role="alert">{errors.emailId.message}</p>)}
           </div>
 
           <div>
@@ -75,12 +76,13 @@ function Login() {
             </label>
             <div className="relative">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <Lock className="h-5 w-5 text-muted-foreground" />
+                <Lock className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
               </div>
               <input 
                 id="password" 
                 type={showPassword ? "text" : "password"} 
                 placeholder="8+ characters" 
+                autoComplete="current-password"
                 className={`block w-full rounded-md border-input bg-[var(--input-background)] py-2.5 pl-10 pr-10 text-foreground placeholder:text-sm placeholder:text-[var(--placeholder-text)] focus:border-primary-from focus:outline-none focus:ring-1 focus:ring-primary-from ${errors.password ? 'border-destructive focus:border-destructive focus:ring-destructive' : ''}`} 
                 {...register('password')}
               />
@@ -93,7 +95,7 @@ function Login() {
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
-            {errors.password && (<p className="mt-1.5 text-sm text-destructive">{errors.password.message}</p>)}
+            {errors.password && (<p className="mt-1.5 text-sm text-destructive" role="alert">{errors.password.message}</p>)}
           </div>
           
           <div className="pt-2">
@@ -104,11 +106,11 @@ function Login() {
                          bg-gradient-to-r from-primary-from to-primary-to
                          hover:shadow-lg hover:shadow-primary-from/40 hover:scale-[1.02]
                          focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-card 
-                         disabled:pointer-events-none disabled:opacity-60 hover: cursor-pointer "
+                         disabled:pointer-events-none disabled:opacity-60 cursor-pointer"
             >
               {loading ? (
                 <>
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
@@ -119,8 +121,10 @@ function Login() {
           </div>
         </form>
         
-        {/* Google Sign in */}
-        <GoogleSignUp text={"Login_with"} ></GoogleSignUp>
+        {/* Lazy load Google Sign in - it's below the fold and loads external SDK */}
+        <Suspense fallback={<div className="h-16 flex items-center justify-center"><span className="text-sm text-muted-foreground">Loading...</span></div>}>
+          <GoogleSignUp text="login_with" />
+        </Suspense>
 
         <p className="text-center text-sm text-muted-foreground">
           Don't have an account?{' '}

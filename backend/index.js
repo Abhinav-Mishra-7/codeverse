@@ -23,13 +23,22 @@ const {initSocket} = require("./src/config/socketManager") ;
 // Checking for expiry of premium
 const { checkPremiumExpiry } = require('./src/utils/cronJobs');
 checkPremiumExpiry();
-// ******
 
 // CORS -> Cross Origin Resource Sharing
-app.use(cors({
-    origin: "https://codeverse-3-jx5t.onrender.com",
-    credentials: true
-}))
+const corsOptions = {
+  origin: "https://codeverse-3-jx5t.onrender.com",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+app.use(cors(corsOptions));
+
+const coopRelax = (req, res, next) => {
+  res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
+  next();
+};
+
+app.use(/^\/(login|auth|oauth)(\/.*)?$/i, coopRelax);
 
 app.use(express.json()) ;
 app.use(cookieParser()) ;
