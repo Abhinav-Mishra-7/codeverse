@@ -29,20 +29,9 @@ const register = async(req,res)=>{
         req.body.password = await bcrypt.hash(password , 10) ;
         req.body.role = "user" ;
 
-        
         // creating new document in DB
         let user = await User.create(req.body) ;
-    
-        // // creating jwt
-        // const token = jwt.sign({_id: user._id , emailId: emailId , role: "user"} , process.env.JWT_KEY , {expiresIn: 60*60}) ;  
-        
-        // // Storing cookie
-        // // if(user.verified)
-        // res.cookie('token' , token , {maxAge: 60*60*1000}) ;
-
-        // const reply = {
-        //     user: user.select('firstName emailId _id problemSolved')
-        // }
+   
         const reply = {
             firstName: user.firstName ,
             emailId: user.emailId ,
@@ -199,10 +188,10 @@ const deleteProfile = async(req,res)=>{
 }
 
 const googleLogin = async (req, res) => {
-    
+    console.log("Hello : " + req.body) ;
     try {
         const { token } = req.body;
-
+        console.log(token) ;
         const ticket = await client.verifyIdToken({
             idToken: token,
             audience: process.env.GOOGLE_CLIENT_ID,
@@ -211,8 +200,6 @@ const googleLogin = async (req, res) => {
         const { given_name, family_name, email } = payload;
 
         let user = await User.findOne({ emailId: email });
-
-        // console.log(user) ;
 
         if (!user) {
             // Generate random password for Google users
@@ -224,7 +211,8 @@ const googleLogin = async (req, res) => {
                 lastName: family_name || '',
                 emailId: email,
                 password: hashedPassword,
-                verified: true,  // Google-verified emails don't need OTP
+                role: "user",
+                verified: true, 
             });
         }
 
@@ -232,10 +220,17 @@ const googleLogin = async (req, res) => {
         const jwtToken = jwt.sign(
             { _id: user._id, emailId: user.emailId, role: user.role },
             process.env.JWT_KEY,
-            { expiresIn: 3600 }
+            { expiresIn: 24 * 3600 }
         );
 
-        res.cookie('token', jwtToken, { maxAge: 60 * 60 * 1000 });
+        const baseCookieOpts = {
+         httpOnly: true,
+         secure: true,         
+         sameSite: "None",      
+         maxAge: 24 * 60 * 60 * 1000
+       };
+
+        res.cookie("token", jwtToken , baseCookieOpts);
         
         const reply = {
             firstName: user.firstName,

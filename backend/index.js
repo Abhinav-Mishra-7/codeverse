@@ -24,7 +24,6 @@ const {initSocket} = require("./src/config/socketManager") ;
 const { checkPremiumExpiry } = require('./src/utils/cronJobs');
 checkPremiumExpiry();
 
-// CORS -> Cross Origin Resource Sharing
 const corsOptions = {
   origin: "https://codeverse-3-jx5t.onrender.com",
   credentials: true,
