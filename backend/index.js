@@ -2,8 +2,15 @@ const express = require("express") ;
 const app = express() ;
 require("dotenv").config() ;
 
+// production setup
+app.set('env', 'production');
+if (process.env.NODE_ENV !== 'production') {
+  process.env.NODE_ENV = 'production';
+}
+
 const main = require("./src/config/db") ;
 const redisClient = require("./src/config/redis");
+const compression = require("compression");
 
 const cookieParser = require("cookie-parser") ;
 const authRouter = require("./src/routes/userAuth") ;
@@ -24,7 +31,6 @@ const {initSocket} = require("./src/config/socketManager") ;
 const { checkPremiumExpiry } = require('./src/utils/cronJobs');
 checkPremiumExpiry();
 
-// ===== OPTIMIZED CORS CONFIGURATION =====
 const corsOptions = {
   origin: "https://codeverse-3-jx5t.onrender.com",
   credentials: true,
@@ -32,9 +38,16 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 
-app.use(cors(corsOptions));
+// compression middleware
+app.use(compression({
+  level: 6,
+  threshold: 1024,
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) return false;
+    return compression.filter(req, res);
+  }
+}));
 
-// ===== SECURITY HEADERS MIDDLEWARE =====
 app.use((req, res, next) => {
   // Allow popups for OAuth flows (Google, GitHub, etc.)
   res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
@@ -54,14 +67,10 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(cors(corsOptions));
+
 app.use(express.json()) ;
 app.use(cookieParser()) ;
-
-// Just for deployment
-app.get('/', (req, res) => {
-  res.json({ message: 'API is running' });
-});
-
 
 const server = http.createServer(app);
 const io = initSocket(server);
