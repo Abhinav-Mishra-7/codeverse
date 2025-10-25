@@ -24,20 +24,35 @@ const {initSocket} = require("./src/config/socketManager") ;
 const { checkPremiumExpiry } = require('./src/utils/cronJobs');
 checkPremiumExpiry();
 
+// ===== OPTIMIZED CORS CONFIGURATION =====
 const corsOptions = {
   origin: "https://codeverse-3-jx5t.onrender.com",
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
+
 app.use(cors(corsOptions));
 
-const coopRelax = (req, res, next) => {
+// ===== SECURITY HEADERS MIDDLEWARE =====
+app.use((req, res, next) => {
+  // Allow popups for OAuth flows (Google, GitHub, etc.)
   res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
+  
+  // Embedder policy for iframes
+  res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+  
+  // Prevent clickjacking
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  
+  // Enable XSS protection
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  
+  // Prevent MIME type sniffing
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  
   next();
-};
-
-app.use(/^\/(login|auth|oauth)(\/.*)?$/i, coopRelax);
+});
 
 app.use(express.json()) ;
 app.use(cookieParser()) ;
