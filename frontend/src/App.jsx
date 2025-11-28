@@ -9,6 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 // These are entry points - load them immediately
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import CodeVerseLanding from "./pages/LandingPage" ;
 import OTPVerification from "./pages/OTPVerification";
 
 // ===== LAZY LOAD: All authenticated pages =====
@@ -73,7 +74,7 @@ const ProtectedRoute = ({ children, requireAuth = true, requireAdmin = false }) 
   const { isAuthenticated, user } = useSelector((state) => state.auth);
 
   if (requireAuth && !isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   if (requireAdmin && user?.role !== 'admin') {
@@ -93,14 +94,14 @@ function App() {
     dispatch(checkAuth());
   }, [dispatch]);
 
-  // Show loading state during auth check
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <span className="loading loading-spinner loading-lg"></span>
-      </div>
-    );
-  }
+  // // Show loading state during auth check
+  // if (loading) {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center bg-background">
+  //       <span className="loading loading-spinner loading-lg"></span>
+  //     </div>
+  //   );
+  // }
 
   return (
     <>
@@ -108,13 +109,17 @@ function App() {
         <Suspense fallback={<PageLoader />}>
           <Routes>
             {/* ===== PUBLIC ROUTES (Not Lazy Loaded) ===== */}
+
+            <Route path="/" element={<CodeVerseLanding />} />
+
             <Route 
               path="/login" 
-              element={isAuthenticated ? <Navigate to="/" replace /> : <Login />} 
+              element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />} 
             />
+
             <Route 
               path="/signup" 
-              element={isAuthenticated ? <Navigate to="/" replace /> : <Signup />} 
+              element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Signup />} 
             />
             <Route 
               path="/OTPVerification/:emailId/:firstName" 
@@ -122,14 +127,15 @@ function App() {
             />
 
             {/* ===== PROTECTED USER ROUTES (Lazy Loaded) ===== */}
-            <Route 
-              path="/" 
+            <Route
+              path="/dashboard"
               element={
                 <ProtectedRoute>
                   <Homepage />
                 </ProtectedRoute>
-              } 
+              }
             />
+
             
             <Route 
               path="/profilePage" 
