@@ -110,7 +110,7 @@ function App() {
           <Routes>
             {/* ===== PUBLIC ROUTES (Not Lazy Loaded) ===== */}
 
-            <Route path="/" element={<CodeVerseLanding />} />
+            {/* <Route path="/" element={<CodeVerseLanding />} /> */}
 
             <Route 
               path="/login" 
@@ -118,7 +118,7 @@ function App() {
             />
 
             <Route 
-              path="/signup" 
+              path="/" 
               element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Signup />} 
             />
             <Route 
