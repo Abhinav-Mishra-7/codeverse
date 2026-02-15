@@ -9,7 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 // These are entry points - load them immediately
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import CodeVerseLanding from "./pages/LandingPage" ;
+// import CodeVerseLanding from "./pages/LandingPage" ;
 import OTPVerification from "./pages/OTPVerification";
 
 // ===== LAZY LOAD: All authenticated pages =====
@@ -110,7 +110,7 @@ function App() {
           <Routes>
             {/* ===== PUBLIC ROUTES (Not Lazy Loaded) ===== */}
 
-            <Route path="/" element={<CodeVerseLanding />} />
+            {/* <Route path="/" element={<CodeVerseLanding />} /> */}
 
             <Route 
               path="/login" 
@@ -118,7 +118,7 @@ function App() {
             />
 
             <Route 
-              path="/signup" 
+              path="/" 
               element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Signup />} 
             />
             <Route 
