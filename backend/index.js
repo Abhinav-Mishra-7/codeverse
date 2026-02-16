@@ -32,7 +32,7 @@ const { checkPremiumExpiry } = require('./src/utils/cronJobs');
 checkPremiumExpiry();
 
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: "https://codeverse-3-jx5t.onrender.com",
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
