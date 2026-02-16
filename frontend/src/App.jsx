@@ -5,6 +5,7 @@ import { useEffect, lazy, Suspense } from "react";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+
 // ===== CRITICAL: DO NOT LAZY LOAD =====
 // These are entry points - load them immediately
 import Login from "./pages/Login";
